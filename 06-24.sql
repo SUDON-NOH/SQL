@@ -1,0 +1,58 @@
+-- 05 - 1 
+-- 필요한 데이터만 출력하는 WHERE 절
+
+SELECT *
+FROM EMP;
+
+-- DEPTNO 가 30인 값들만 추출
+-- R의 FILTER와 비슷한 기능을 한다
+SELECT EMPNO, ENAME, JOB, HIREDATE, SAL COMM, DEPTNO
+FROM EMP
+WHERE DEPTNO = 30;
+
+-- AND / OR 을 넣어서 조건을 만족하는 값을 추출
+-- WHERE .. AND ..
+SELECT *
+FROM EMP
+WHERE DEPTNO = 30
+AND JOB = 'SALESMAN';
+
+SELECT *
+FROM EMP
+WHERE SAL > 2000;
+
+SELECT *
+FROM EMP
+WHERE DEPTNO = 30
+OR JOB = 'CLERK';
+
+SELECT *
+FROM Student;
+
+SELECT *
+FROM EC_Product;
+
+-- 실습과제 SELECT 문
+-- Q1
+SELECT *
+FROM EC_Product;
+
+SELECT PRODUCT_CODE, PRODUCT_NAME, UNIT_PRICE
+FROM EC_Product
+WHERE UNIT_PRICE > 2000000;
+
+-- Q8
+SELECT *
+FROM EC_Order;
+
+SELECT *
+FROM EC_Order
+WHERE CSEL = '신용카드';
+
+-- Q10
+SELECT *
+FROM EC_Order;
+
+SELECT *
+FROM EC_Order
+WHERE ORDER_ID = 'usko';
