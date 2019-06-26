@@ -1,0 +1,240 @@
+-- NVL2(X, VALUE1, VALUE2)
+SELECT EMPNO, ENAME, COMM,
+    NVL2(COMM, 'O', 'X'),
+    NVL2(COMM, SAL * 12 + COMM, SAL * 12) AS ANNSAL
+    FROM EMP;
+    
+-- DECODE문, CASE문
+
+-- DECODE 문
+SELECT EMPNO, ENAME, JOB, SAL,
+    DECODE(JOB,
+            'MANAGER', SAL * 1.1,
+            'SALESMAN', SAL * 1.05,
+            'ANALYST', SAL,
+            SAL*1.03
+            ) AS UPSAL -- 위의 3가지 직무가 아닌 경유 3% 인상
+FROM EMP;
+
+-- CASE문 ~ WHEN ~ THEN ...
+SELECT EMPNO, ENAME, JOB, SAL,
+    CASE JOB
+        WHEN 'MANAGER' THEN SAL * 1.1
+        WHEN 'SALESMAN' THEN SAL * 1.05
+        WHEN 'ANALYST' THEN SAL
+        ELSE SAL * 1.03
+    END AS UPSAL
+FROM EMP;
+
+-- 7장 다중행함수
+
+-- SUM() , COUNT() : 횟수, MAX(), MIN(), AVG()
+-- SUM()
+SELECT SUM(COMM)
+    FROM EMP;
+
+SELECT COUNT(*) --행의 수
+    FROM EMP;
+
+SELECT COUNT(COMM) -- 결측치를 제외한 행의 수
+    FROM EMP;
+    
+SELECT MAX(SAL)
+    FROM EMP;
+    
+SELECT MIN(SAL)
+    FROM EMP;
+    
+SELECT MAX(SAL), MIN(SAL)
+    FROM EMP;
+    
+SELECT AVG(SAL)
+    FROM EMP
+WHERE DEPTNO = 10;
+
+SELECT AVG(SAL)
+    FROM EMP
+WHERE DEPTNO = 20;
+
+SELECT AVG(SAL)
+    FROM EMP
+WHERE DEPTNO = 30;
+
+SELECT AVG(SAL),
+    '10' AS DEPTNO
+    FROM EMP
+    WHERE DEPTNO = 10
+UNION
+SELECT AVG(SAL),
+    '20' AS DEPTNO
+    FROM EMP
+    WHERE DEPTNO = 20
+UNION
+SELECT AVG(SAL),
+    '30' AS DEPTNO
+    FROM EMP
+    WHERE DEPTNO = 30;
+    
+ 
+-- GROUP BY 절
+
+SELECT AVG(SAL), DEPTNO
+    FROM EMP
+GROUP BY DEPTNO;
+
+SELECT DEPTNO, JOB, AVG(SAL)
+    FROM EMP
+GROUP BY DEPTNO, JOB
+ORDER BY DEPTNO, JOB;
+
+SELECT JOB, DEPTNO, AVG(SAL)
+    FROM EMP
+GROUP BY JOB, DEPTNO
+ORDER BY JOB, DEPTNO;
+
+-- 주의사항 " SELECT 문에 GROUP BY에서 지정하지 않은 열을 사용할 수 없다.
+SELECT ENAME, DEPTNO, AVG(SAL)
+FROM EMP
+GROUP BY DEPTNO; --> 오류발생
+
+-- GROUP BY ~ HAVING ~
+
+SELECT DEPTNO, JOB, AVG(SAL)
+    FROM EMP
+GROUP BY DEPTNO, JOB
+    HAVING AVG(SAL) >= 2000
+ORDER BY DEPTNO, JOB; --> 급여가 2000 이상인 것들만 DEPTNO와 JOB에 따라 구분
+
+SELECT DEPTNO, JOB, AVG(SAL)
+    FROM EMP
+WHERE AVG(SAL) <= 3000
+GROUP BY DEPTNO, JOB
+    HAVING AVG(SAL) >= 2000
+ORDER BY DEPTNO, JOB;   -- 실패
+
+SELECT DEPTNO, JOB, AVG(SAL)
+    FROM EMP
+WHERE SAL <= 3000
+GROUP BY DEPTNO, JOB
+    HAVING AVG(SAL) >= 2000
+ORDER BY DEPTNO, JOB;  -- 성공
+
+
+SELECT DEPTNO, JOB, MAX(SAL)
+    FROM EMP
+GROUP BY DEPTNO, JOB
+ORDER BY DEPTNO, JOB;
+
+
+-- PIVOT : 행을 열로 변환
+SELECT *
+    FROM(SELECT DEPTNO, JOB, SAL
+         FROM EMP)
+    PIVOT(MAX(SAL)
+          FOR DEPTNO IN(10 AS A, 20 AS B, 30 AS C)
+          ) -- FOR 에 가로줄로 표시할 열을 명시 / IN 에 출력하려는 열 데이터를 지정
+ORDER BY JOB;
+
+-- P.212 연습문제
+-- Q1
+SELECT DEPTNO, 
+    TRUNC(AVG(SAL)) AS AVG_SAL,
+    MAX(SAL) AS AVG_MAX, 
+    MIN(SAL) AS AVG_MIN, 
+    COUNT(DEPTNO)
+    FROM EMP
+    GROUP BY DEPTNO;
+    
+-- Q2
+SELECT JOB, COUNT(*)
+    FROM EMP
+    GROUP BY JOB
+    HAVING COUNT(*) >= 3;
+    
+-- Q3
+SELECT *
+    FROM EMP;
+
+SELECT TO_CHAR(HIREDATE, 'YYYY') AS HIRE_YEAR, DEPTNO, COUNT(*) AS CNT
+    FROM EMP
+    WHERE DEPTNO IS NOT NULL
+    GROUP BY TO_CHAR(HIREDATE, 'YYYY'),DEPTNO;
+    
+-- Q4
+SELECT NVL2(COMM, 'O', 'X') AS EXIST_COMM,
+       COUNT(*) AS CNT
+       FROM EMP
+    GROUP BY NVL2(COMM, 'O', 'X');
+    
+-- Q5
+SELECT 
+    DEPTNO,
+    TO_CHAR(HIREDATE, 'YYYY') AS HIRE_YEAR,
+    COUNT(*) AS CNT,
+    MAX(SAL) AS AVG_MAX,
+    SUM(SAL) AS AVG_SUM,
+    AVG(SAL) AS AVG_SAL
+    FROM EMP
+    GROUP BY ROLLUP(DEPTNO, TO_CHAR(HIREDATE, 'YYYY')); -- ROLLUP은 소계, 총계
+    
+-- 8장 조인
+
+-- [1] 연산자에 따른 구분 : 등가조인, 안티조인
+-- [2] 조인 대상에 따른 구분 : 셀프조인
+-- [3] 조인조건에 따른 구분 : 내부조인(INNER JOIN), 외부조인(OUTER JOIN)
+
+SELECT *
+    FROM EMP; -- 14 ROWS
+    
+SELECT *
+    FROM DEPT; -- 4 ROWS
+
+SELECT *
+    FROM EMP, DEPT; -- 56 ROWS 오류 14*4 , 모든 행을 조합
+
+-- 내부조인
+-- 열 이름 사용하여 값을 비교하는 조건식을 사용, NULL 데이터가 없다
+SELECT *
+    FROM EMP, DEPT
+    WHERE EMP.DEPTNO = DEPT.DEPTNO
+ORDER BY EMPNO;
+
+-- 테이블에 별칭 사용
+SELECT *
+    FROM EMP E, DEPT D
+    WHERE E.DEPTNO = D.DEPTNO
+ORDER BY EMPNO;
+
+-- 셀프조인 --> 내부조인
+SELECT E1.EMPNO, E1.ENAME, E1.MGR,
+       E2.EMPNO AS MGR_EMPNO,
+       E2.ENAME AS MGR_NAME
+    FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO;
+
+SELECT E1.EMPNO, E1.ENAME,
+       E2.EMPNO AS MGR_EMPNO,
+       E2.ENAME AS MGR_NAME
+    FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO; 
+--KING(PRESIDENT) 은 매니저가 없어서 NULL 값으로 발생. 조건에 만족되지 않아 결과 값이 없어짐
+
+-- 외부조인 : LEFT/RIGHT 외부조인
+-- LEFT 외부조건 : WHERE Table1.Col1 = Table2.Col1(+)
+-- Table1의 Col1 과 Table2의 Col1의 조건이 같은 값들을 추출
+
+SELECT E1.EMPNO, E1.ENAME,
+       E2.EMPNO AS MGR_EMPNO,
+       E2.ENAME AS MGR_NAME
+    FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO(+) --> 14 ROWS KING이 그대로 추가(NULL값이 추가됨)
+ORDER BY E1.EMPNO; 
+
+-- RIGHT 외부조건 : WHERE Table1.Col1(+) = Table2.Col1
+
+SELECT E1.EMPNO, E1.ENAME,
+       E2.EMPNO AS MGR_EMPNO,
+       E2.ENAME AS MGR_NAME
+    FROM EMP E1, EMP E2
+WHERE E1.MGR(+) = E2.EMPNO
+ORDER BY E1.EMPNO; --> 21 ROWS 왼쪽 KING이 제거, 8개 NULL이 왼쪽에 추가
