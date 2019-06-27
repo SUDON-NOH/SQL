@@ -17,16 +17,16 @@ FROM EC_Product2;
 DESC EC_Product2;
 
 INSERT INTO EC_Product2
-    VALUES ('FL01', '²É´Ù¹ß', 'ºÓÀºÀå¹Ì', 45000, 20, '±Û·Î¸®¾Æ', 'ROSE_01.JPG');
+    VALUES ('FL01', 'ê½ƒë‹¤ë°œ', 'ë¶‰ì€ìž¥ë¯¸', 45000, 20, 'ê¸€ë¡œë¦¬ì•„', 'ROSE_01.JPG');
     
 INSERT INTO EC_Product2
-    VALUES ('FL02', '¹éÇÕ²Éº´', '¹éÇÕë', 80000, 20, '±Û·Î¸®¾Æ', 'BOX_02.JPG');
+    VALUES ('FL02', 'ë°±í•©ê½ƒë³‘', 'ë°±í•©Â', 80000, 20, 'ê¸€ë¡œë¦¬ì•„', 'BOX_02.JPG');
     
 INSERT INTO EC_Product2
-    VALUES ('FL03', '²É»óÀÚ', 'Àå¹Ì100¼ÛÀÌ', 130000, 20, '±Û·Î¸®¾Æ', 'ROSE_03.JPG');
+    VALUES ('FL03', 'ê½ƒìƒìž', 'ìž¥ë¯¸100ì†¡ì´', 130000, 20, 'ê¸€ë¡œë¦¬ì•„', 'ROSE_03.JPG');
     
 -- Q2
--- »èÁ¦µÈ Å×ÀÌºí º¹±¸ (¸ÕÀú SHOW RECYCLEBIN À¸·Î " " ºÎºÐ À§Ä¡ È®ÀÎ ÇÊ¿ä)
+-- ì‚­ì œëœ í…Œì´ë¸” ë³µêµ¬ (ë¨¼ì € SHOW RECYCLEBIN ìœ¼ë¡œ " " ë¶€ë¶„ ìœ„ì¹˜ í™•ì¸ í•„ìš”)
 flashback table "BIN$Oy8CQdisSs2uZiyH5h+3uQ==$0" to before drop rename to ec_basket_re;
 
 SELECT *
@@ -38,7 +38,7 @@ CREATE TABLE EC_BASKET1
 
 DESC EC_BASKET1;
 
--- ¼öÀÛ¾÷À¸·Î ¸¸µç EC_Basket2
+-- ìˆ˜ìž‘ì—…ìœ¼ë¡œ ë§Œë“  EC_Basket2
 CREATE TABLE EC_Basket2(
         ORDER_NO        NUMBER(10),
         ORDER_ID        VARCHAR2(10) NOT NULL,
@@ -71,9 +71,9 @@ SELECT * FROM EC_ORDER;
 
 -- Q3
 UPDATE EC_Order
-    SET GUBUN = '¹Ì°áÀç'
+    SET GUBUN = 'ë¯¸ê²°ìž¬'
 WHERE GUBUN IS NULL
-OR GUBUN = '°áÀç';
+OR GUBUN = 'ê²°ìž¬';
 
 SELECT *
 FROM EC_ORDER;
@@ -85,10 +85,12 @@ SELECT * FROM EC_BASKET1;
 
 -- Q5
 UPDATE EC_ORDER
-    SET CSEL = 'Çö±ÝÀÔ±Ý',
-        GUBUN = '°áÀç',
-        CDATE = '20150203'
+    SET CSEL = 'í˜„ê¸ˆìž…ê¸ˆ',
+        GUBUN = 'ê²°ìž¬',
+        CDATE = to_Date('02-03-2015','mm-dd-YYYY')
 WHERE ORDER_ID = 'jupark';
 
 SELECT *
 FROM EC_ORDER;
+
+COMMIT;
